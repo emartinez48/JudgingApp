@@ -3,7 +3,6 @@
 class JudgingApp extends CI_Controller
 {
 
-
   public function __construct()
   {
     parent::__construct();
@@ -14,92 +13,107 @@ class JudgingApp extends CI_Controller
     $this->load->helper('html');
     $this->load->model('Judge_Model');
   }
-  public function index()
-  {
-    $this->form_validation->set_rules('username', 'Username', 'required');
-    $this->form_validation->set_rules('password', 'Password', 'required', array('required' => 'You must provide a %s.'));
 
-    $username = $this->input->post("username");
-    $password = $this->input->post("password");
+public function index()
+   {
+     $this->form_validation->set_rules('username', 'Username', 'required');
+     $this->form_validation->set_rules('password', 'Password', 'required', array('required' => 'You must provide a %s.'));
+     $username = $this->input->post("username");
+     $password = $this->input->post("password");
+     $data['JudgeID'] = $this->Judge_Model->Get_JudgeID();
 
-    if ($this->form_validation->run() == FALSE)
-    {
-      $this->load->view('JudgingApp/myform');
-    }
-    else
-    {
-      //validation succeeds
-      if ($this->input->post('btn_login') == "Login")
-      {
-        //check if username and password is correct
-        $usr_result = $this->Judge_Model->get_user($username, $password);
 
-        if ($usr_result > 0)
-        {
-          //set the session variables
-          $sessiondata = array('login' => TRUE,'JudgeName' => $username,'uid' => $uresult[0]->JudgeID);
-          $sessiondata = array($this->session->set_userdata($sessiondata));
-          redirect("JudgingApp/MainMenu");
-          }
-          else
-          {
+     if ($this->form_validation->run() == FALSE)
+     {
+       $this->load->view('JudgingApp/myform',$data);
+
+     }
+     else
+     {
+       //validation succeeds
+       if ($this->input->post('btn_login') == "Login")
+       {
+         //check if username and password is correct
+         $usr_result = $this->Judge_Model->get_user($username, $password);
+        //Query to retrive ID
+
+         if ($usr_result > 0)
+         {
+           //Messy way to store ID
+           $i=0;
+           $data['JudgeID'] =  $this->Judge_Model->Get_JudgeID2($username);
+           foreach ($data as $row);
+           {
+               $VarID=$row[$i]->JudgeID;
+           }
+           //Ends here
+           //set the session variables
+           $sessiondata = array('login' => TRUE,
+                                'JudgeName' => $username,
+                                'uid' => $VarID);
+           $sessiondata = array($this->session->set_userdata($sessiondata));
+           redirect("JudgingApp/MainMenu");
+           }
+           else
+           {
            redirect('JudgingApp/index');
-          }
+           }
         }
-        else
-        {
-          redirect('Index');
-        }
+        // else{redirect('Index');}
       }
     }
-    public function view($PosterID = NULL)
-  {
-          $this->load->helper('form');
-          $this->load->library('form_validation');
-          $data['Poster_item'] = $this->Judge_Model->get_Posters($PosterID);
-          if (empty($data['Poster_item']))
-          {
-                  show_404();
-          }
-          $data['PosterID'] = $data['Poster_item']['PosterID'];
 
-
-          if ($this->form_validation->run() === FALSE)
-          {
-            $this->load->view('JudgingAPP/view', $data);
-          }
-          if (isset($this->session->userdata['JudgeName']))
-          {
-            echo $this->session->userdata['JudgeName'];
-          }
-          else
-          {
-                $this->Judge_Model->Post_Score();
-               redirect('JudgingApp/MainMenu');
-          }
-
-
-  }
     public function MainMenu()
     {
       $data['Poster'] = $this->Judge_Model->get_Posters();
-      $this->load->view('JudgingApp/MainMenu',$data);
+
       if (isset($this->session->userdata['JudgeName']))
       {
-          echo $this->session->userdata['JudgeName'];
-          echo $this->session->userdata['uid'];
-          echo $this->session->userdata['Pass'];
-
-
+        $this->load->view('JudgingApp/MainMenu',$data);
       }
       else
       {
-        echo nothing;
+        redirect('JudgingApp/index');
       }
     }
 
+    public function ScorePoster($PosterID = NULL)
+    {
+
+      $this->load->helper('form');
+      $this->load->library('form_validation');
+
+    //  $this->form_validation->set_rules('title', 'Title', 'required');
+      $data['PosterID']=$PosterID;
+      
+      $this->form_validation->set_rules('Criteria1', 'Criteria1 ', 'required');
+      $this->form_validation->set_rules('Criteria2', 'Criteria2 ', 'required');
+      $this->form_validation->set_rules('Criteria3', 'Criteria3 ', 'required');
+      $this->form_validation->set_rules('Criteria4', 'Criteria4 ', 'required');
+      $this->form_validation->set_rules('Criteria5', 'Criteria5 ', 'required');
+      $this->form_validation->set_rules('Criteria6', 'Criteria6 ', 'required');
+      $this->form_validation->set_rules('Criteria7', 'Criteria7 ', 'required');
+      $this->form_validation->set_rules('Criteria8', 'Criteria8 ', 'required');
+      $this->form_validation->set_rules('Criteria9', 'Criteria9 ', 'required');
+      $this->form_validation->set_rules('Criteria10', 'Criteria10 ', 'required');
+
+      if ($this->form_validation->run() === FALSE && isset($this->session->userdata['JudgeName']))
+      {
+          $this->load->view('JudgingApp/ScorePoster',$data);
+      }
+      else
+      {
+        $this->Judge_Model->Post_Score();
+          redirect('JudgingApp/MainMenu');
+      }
+
+
+
+    }
+
+
+
+
 
 }
-
-
   ?>
