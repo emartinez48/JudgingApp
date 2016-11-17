@@ -76,6 +76,22 @@ public function index()
         redirect('JudgingApp/index');
       }
     }
+  public function AdminMenu()
+    {
+      $this->load->view('Templates/AdminHeader');
+      $this->load->view('JudgingApp/Admin/AdminMenu');
+
+      if ($this->input->post('nJudge') == "Create new Judge")
+      {
+        redirect('JudgingApp/Admin/success');
+
+      }
+
+      if ($this->input->post('btn_logoutA') == "Logout")
+      {
+        session_destroy();
+      }
+    }
 
     public function ScorePoster($PosterID = NULL)
     {
