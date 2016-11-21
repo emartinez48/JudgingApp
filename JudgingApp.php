@@ -76,6 +76,42 @@ public function index()
         redirect('JudgingApp/index');
       }
     }
+  public function AdminIndex()
+  {
+    $this->form_validation->set_rules('usernameA', 'UsernameA', 'required');
+    $this->form_validation->set_rules('passwordA', 'PasswordA', 'required', array('required' => 'You must provide a %s.'));
+    $usernameA = $this->input->post("usernameA");
+    $passwordA = $this->input->post("passwordA");
+    if ($this->form_validation->run() == FALSE)
+    {
+      $this->load->view('JudgingApp/Admin/Adminform');
+
+    }
+    else
+    {
+      //validation succeeds
+      if ($this->input->post('btn_loginA') == "Login")
+      {
+        //check if username and password is correct
+        $usr_result = $this->Judge_Model->get_Admin($usernameA, $passwordA);
+        if ($usr_result > 0)
+        {
+          //set the session variables
+          $sessiondata = array('login' => TRUE,'AdminName' => $usernameA,'uid' => $uresult[0]->AdminID);
+          $sessiondata = array($this->session->set_userdata($sessiondata));
+          redirect('JudgingApp/AdminMenu');
+          }
+          else
+          {
+           redirect('JudgingApp/AdminIndex');
+          }
+        }
+        else
+        {
+          redirect('Index');
+        }
+      }
+    }
   public function AdminMenu()
     {
       $this->load->view('Templates/AdminHeader');
