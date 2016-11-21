@@ -87,4 +87,10 @@ class Judge_Model extends CI_Model
                }
                return array();
            }
+     function get_Admin($usrA, $pwdA)
+     {
+          $sql = "select * from Admin where AdminName = '" . $usrA . "' and AdminPass = '" . $pwdA . "' ''";
+          $query = $this->db->query($sql);
+          return $query->num_rows();
+     }
 }?>
