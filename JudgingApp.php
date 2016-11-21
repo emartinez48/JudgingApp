@@ -16,6 +16,10 @@ class JudgingApp extends CI_Controller
 
 public function index()
    {
+      if ($this->input->post('btn_loginAdmin') == "Admin")
+      {
+        redirect('JudgingApp/AdminIndex');
+      }
      $this->form_validation->set_rules('username', 'Username', 'required');
      $this->form_validation->set_rules('password', 'Password', 'required', array('required' => 'You must provide a %s.'));
      $username = $this->input->post("username");
