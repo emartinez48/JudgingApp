@@ -6,7 +6,8 @@
 
 <?php echo validation_errors(); ?>
 <?php echo form_open('JudgingApp/index');
-    //  print_r($JudgeID);?>
+<div><input id="btn_loginAdmin" name="btn_loginAdmin" type="Submit" value="Admin" /></div>
+
 
 <h5>Username</h5>
 <input type="text" name="username" value="" size="50" />
