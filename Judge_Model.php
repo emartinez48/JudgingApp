@@ -8,7 +8,6 @@ class Judge_Model extends CI_Model
           parent::__construct();
           $this->load->database();
      }
-
      //get the username & password from tbl_usrs
      function get_user($usr, $pwd)
      {
@@ -16,7 +15,6 @@ class Judge_Model extends CI_Model
       $query = $this->db->query($sql);
       return $query->num_rows(); //On returns a number not results
      }
-
      function get_userinfo($usr, $pwd)
      {
        $array = array('JudgeName' => $username, 'JudgePass' => $password);
@@ -25,19 +23,12 @@ class Judge_Model extends CI_Model
        $result = $query->result_array();
        return $result;
      }
-
-
-
-     public function get_Posters($slug = FALSE)
+     public function get_Posters($PSess)
      {
-             if ($slug === FALSE)
-             {
-                     $query = $this->db->get('Poster');
-                     return $query->result_array();
-             }
-
-             $query = $this->db->get_where('Poster', array('PosterID' => $slug));
-             return $query->row_array();
+               $array = array('SessionID'=> $PSess);
+               $this->db->where($array);
+               $query = $this->db->get('Poster');
+               return $query->result_array();
      }
      public function FindPoster($PosterID = FALSE)
  {
@@ -87,10 +78,16 @@ class Judge_Model extends CI_Model
                }
                return array();
            }
-     function get_Admin($usrA, $pwdA)
-     {
-          $sql = "select * from Admin where AdminName = '" . $usrA . "' and AdminPass = '" . $pwdA . "' ''";
-          $query = $this->db->query($sql);
-          return $query->num_rows();
-     }
+           function Get_Session()
+                {
+                    $q = $this->db->get_where('Session',array('Active' => 1));
+                    if($q->num_rows() > 0)
+                    {
+                        return $q->result();
+                    }
+                    return array();
+                }
+
+
+
 }?>

@@ -16,17 +16,15 @@ class JudgingApp extends CI_Controller
 
 public function index()
    {
-      if ($this->input->post('btn_loginAdmin') == "Admin")
-      {
-        redirect('JudgingApp/AdminIndex');
-      }
+
+     //Validate the errors and make sure a user can insert into a database
      $this->form_validation->set_rules('username', 'Username', 'required');
      $this->form_validation->set_rules('password', 'Password', 'required', array('required' => 'You must provide a %s.'));
      $username = $this->input->post("username");
      $password = $this->input->post("password");
      $data['JudgeID'] = $this->Judge_Model->Get_JudgeID();
 
-
+     //Meanwhile the rules are false (Empty) the code will not Proceed
      if ($this->form_validation->run() == FALSE)
      {
        $this->load->view('JudgingApp/myform',$data);
@@ -39,8 +37,7 @@ public function index()
        {
          //check if username and password is correct
          $usr_result = $this->Judge_Model->get_user($username, $password);
-        //Query to retrive ID
-
+        //Once Correct
          if ($usr_result > 0)
          {
            //Messy way to store ID
@@ -51,6 +48,7 @@ public function index()
                $VarID=$row[$i]->JudgeID;
            }
            //Ends here
+
            //set the session variables
            $sessiondata = array('login' => TRUE,
                                 'JudgeName' => $username,
@@ -69,79 +67,42 @@ public function index()
 
     public function MainMenu()
     {
-      $data['Poster'] = $this->Judge_Model->get_Posters();
+      $i=0;
+      $data['Session'] =  $this->Judge_Model->Get_Session();
+      foreach ($data as $row);
+      {
+          $PSess=$row[$i]->Session;
+      }
 
+
+      $data['Poster'] = $this->Judge_Model->get_Posters($PSess);
       if (isset($this->session->userdata['JudgeName']))
       {
+        $this->load->view('templates/header');
         $this->load->view('JudgingApp/MainMenu',$data);
+        if ($this->input->post('btn_logout') == "Logout")
+      {
+        session_destroy();
+      }
       }
       else
       {
         redirect('JudgingApp/index');
       }
+
     }
-  public function AdminIndex()
-  {
-    $this->form_validation->set_rules('usernameA', 'UsernameA', 'required');
-    $this->form_validation->set_rules('passwordA', 'PasswordA', 'required', array('required' => 'You must provide a %s.'));
-    $usernameA = $this->input->post("usernameA");
-    $passwordA = $this->input->post("passwordA");
-    if ($this->form_validation->run() == FALSE)
+    public function Redirect()
     {
-      $this->load->view('JudgingApp/Admin/Adminform');
-
+        redirect('JudgingApp/index');
     }
-    else
-    {
-      //validation succeeds
-      if ($this->input->post('btn_loginA') == "Login")
-      {
-        //check if username and password is correct
-        $usr_result = $this->Judge_Model->get_Admin($usernameA, $passwordA);
-        if ($usr_result > 0)
-        {
-          //set the session variables
-          $sessiondata = array('login' => TRUE,'AdminName' => $usernameA,'uid' => $uresult[0]->AdminID);
-          $sessiondata = array($this->session->set_userdata($sessiondata));
-          redirect('JudgingApp/AdminMenu');
-          }
-          else
-          {
-           redirect('JudgingApp/AdminIndex');
-          }
-        }
-        else
-        {
-          redirect('Index');
-        }
-      }
-    }
-  public function AdminMenu()
-    {
-      $this->load->view('Templates/AdminHeader');
-      $this->load->view('JudgingApp/Admin/AdminMenu');
 
-      if ($this->input->post('nJudge') == "Create new Judge")
-      {
-        redirect('JudgingApp/Admin/success');
-
-      }
-
-      if ($this->input->post('btn_logoutA') == "Logout")
-      {
-        session_destroy();
-      }
-    }
 
     public function ScorePoster($PosterID = NULL)
     {
 
       $this->load->helper('form');
       $this->load->library('form_validation');
-
-    //  $this->form_validation->set_rules('title', 'Title', 'required');
       $data['PosterID']=$PosterID;
-      
       $this->form_validation->set_rules('Criteria1', 'Criteria1 ', 'required');
       $this->form_validation->set_rules('Criteria2', 'Criteria2 ', 'required');
       $this->form_validation->set_rules('Criteria3', 'Criteria3 ', 'required');
@@ -152,24 +113,23 @@ public function index()
       $this->form_validation->set_rules('Criteria8', 'Criteria8 ', 'required');
       $this->form_validation->set_rules('Criteria9', 'Criteria9 ', 'required');
       $this->form_validation->set_rules('Criteria10', 'Criteria10 ', 'required');
-
+                           //User must be logged in
       if ($this->form_validation->run() === FALSE && isset($this->session->userdata['JudgeName']))
       {
+          $this->load->view('Templates/Header');
           $this->load->view('JudgingApp/ScorePoster',$data);
+          if ($this->input->post('btn_logout') == "Logout")
+          {
+            session_destroy();
+              redirect('JudgingApp/index');
+          }
       }
       else
-      {
+      { //Olonce all Criteria has been Filled
         $this->Judge_Model->Post_Score();
           redirect('JudgingApp/MainMenu');
       }
-
-
-
     }
-
-
-
-
 
 }
   ?>
