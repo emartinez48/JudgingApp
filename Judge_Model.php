@@ -88,6 +88,26 @@ class Judge_Model extends CI_Model
                     return array();
                 }
 
-
+//Admin
+    function getJudges(){
+       $this->db->select("JudgeID,JudgeName,JudgePass");
+       $this->db->from('Judge');
+       $query = $this->db->get();
+       return $query->result();
+     }
+     function getAllPosters(){
+       $this->db->select("PosterID,Title,Category, PFirst, PLast, Mentor");
+       $this->db->from('PosterA');
+       $query = $this->db->get();
+       return $query->result();
+     }
+     function form_insert($data){
+       // Inserting in Table(Judge) of Database(Judging_sys)
+       $this->db->insert('Judge', $data);
+     }
+     function update($data1){
+       // Inserting in Table(Judge) of Database(Judging_sys)
+       $this->db->insert('Session', $data);
+     }
 
 }?>
