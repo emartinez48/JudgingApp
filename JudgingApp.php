@@ -95,6 +95,56 @@ public function index()
     {
         redirect('JudgingApp/index');
     }
+    public function AdminMenu()
+    {
+      $this->load->library('form_validation');
+      $this->load->helper('url');
+
+         if (isset($this->session->userdata['AdminName']))
+         {
+            $this->load->view('templates/Adminheader');
+
+////////////////////////SESSIONS////////////////////////////////////////////////
+      //$this->load->view('JudgingApp/Admin/Sessions_view');
+      if ($this->form_validation->run() == FALSE) {
+        $this->load->view('JudgingApp/Admin/Sessions_view');
+       }
+
+
+/////////////////////////VIEW POSTERS///////////////////////////////////////////
+     $this->data['Judges'] = $this->Judge_Model->getJudges();
+     $this->load->view('JudgingApp/Admin/Judges_view', $this->data);
+
+/////////////////////////VIEW JUDGES/////////////////////////////////////////////
+     $this->data['Posters'] = $this->Judge_Model->getAllPosters();
+     $this->load->view('JudgingApp/Admin/Posters_view', $this->data);
+
+///////////////////////CREATE NEW JUDGE/////////////////////////////////////////
+     //$this->load->view('JudgingApp/Admin/CreateJudge_view');
+     $this->form_validation->set_rules('jname', 'JudgeName','required|min_length[5]|max_length[15]');
+     $this->form_validation->set_rules('jemail', 'JudgePass','required|min_length[5]|max_length[15]');
+     if ($this->form_validation->run() == FALSE) {
+       $this->load->view('JudgingApp/Admin/CreateJudge_view');
+      }
+      else {
+        //Setting values for tabel columns
+        $data = array(
+        'JudgeName' => $this->input->post('jname'),
+        'JudgePass' => $this->input->post('jpass'),
+        );
+        //Transfering data to Model
+        $this->Judge_Model->form_insert($data);
+        $data['message'] = 'Data Inserted Successfully';
+        //Loading View
+        $this->load->view('JudgingApp/Admin/CreateJudge_view', $data);
+      }
+////////////////////////////////////////////////////////////////////////////////
+      if ($this->input->post('btn_logoutA') == "Logout")
+      {
+        session_destroy();
+      }
+    }
+  }
 
 
     public function ScorePoster($PosterID = NULL)
