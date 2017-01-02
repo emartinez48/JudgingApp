@@ -105,9 +105,5 @@ class Judge_Model extends CI_Model
        // Inserting in Table(Judge) of Database(Judging_sys)
        $this->db->insert('Judge', $data);
      }
-     function update($data1){
-       // Inserting in Table(Judge) of Database(Judging_sys)
-       $this->db->insert('Session', $data);
-     }
 
 }?>
